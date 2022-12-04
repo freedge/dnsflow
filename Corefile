@@ -1,0 +1,5 @@
+.:1053 {
+    forward . 8.8.8.8:53
+    log
+    dnstap /tmp/dnstap.sock full
+}

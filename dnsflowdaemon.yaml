@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemon-dnsflow
+  namespace: kube-system
+  labels:
+    k8s-app: daemon-dnsflow
+spec:
+  selector:
+    matchLabels:
+      name: daemon-dnsflow
+  template:
+    metadata:
+      labels:
+        name: daemon-dnsflow
+    spec:    
+      containers:
+      - name: dnsflow
+        image: localhost/dnsflow:0.0.4
+        args: [ "-tapsock", "/var/run/dns/dnstap.sock", "-node", "$(K8S_NODE)" ]
+        env:
+        - name: K8S_NODE                                                                                                                                              
+          valueFrom:                                                                                                                                                  
+            fieldRef:                                                                                                                                                 
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/run/dns
+          name: run-dns
+        - mountPath: /var/run/openvswitch
+          name: run-ovs
+      volumes:
+      - name: run-dns
+        hostPath:
+          path: /var/run/dns
+      - name: run-ovs
+        hostPath:
+          path: /var/run/openvswitch
+      terminationGracePeriodSeconds: 30

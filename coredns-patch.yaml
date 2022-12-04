@@ -1,0 +1,13 @@
+spec:
+  template:
+    spec:
+      containers:
+      - name: coredns
+        volumeMounts:
+        - mountPath: /var/run/dns
+          name: run-dns
+      volumes:
+      - hostPath:
+          path: /var/run/dns
+          type: ""
+        name: run-dns
