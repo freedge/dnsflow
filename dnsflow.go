@@ -11,6 +11,7 @@ import (
 
 	dnstap "github.com/dnstap/golang-dnstap"
 	"github.com/miekg/dns"
+	selinux "github.com/opencontainers/selinux/go-selinux"
 	v1 "github.com/ovn-org/ovn-kubernetes/go-controller/pkg/crd/egressfirewall/v1"
 	egressfirewallclientset "github.com/ovn-org/ovn-kubernetes/go-controller/pkg/crd/egressfirewall/v1/apis/clientset/versioned"
 	"google.golang.org/protobuf/proto"
@@ -102,6 +103,7 @@ func main() {
 	kubeconfig := flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	node := flag.String("node", "", "node where this thing is running on")
 	tapsock := flag.String("tapsock", "/var/run/dns/dnstap.sock", "path to the dnstap unix sock")
+	secon := flag.String("secon", "", "selinux context for the dnstap socket file")
 	flag.Parse()
 
 	var config *rest.Config
@@ -131,6 +133,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// we add some hack to let CoreDNS write stuff on our socket
+	if *secon != "" {
+		if err := selinux.Chcon(*tapsock, *secon, false); err != nil {
+			panic(err)
+		}
+	}
+
 	c := make(chan []byte, 102400)
 	go runOutputLoop(c)
 	go runInput(dnstapinput, c, &iwg)

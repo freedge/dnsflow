@@ -4,7 +4,10 @@ go 1.18
 
 require (
 	github.com/dnstap/golang-dnstap v0.4.0
+	github.com/miekg/dns v1.1.31
+	github.com/opencontainers/selinux v1.10.2
 	github.com/ovn-org/ovn-kubernetes/go-controller v0.0.0-20221202162702-161fbb95062e
+	google.golang.org/protobuf v1.28.0
 	k8s.io/apimachinery v0.25.4
 	k8s.io/client-go v0.25.4
 )
@@ -27,7 +30,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/miekg/dns v1.1.31 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
@@ -40,7 +42,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

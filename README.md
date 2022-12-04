@@ -130,4 +130,38 @@ k run -n abc --overrides="{\"spec\": {\"nodeSelector\": { \"kubernetes.io/hostna
 
 ## in OpenShift
 
+```
+oc patch dns.operator.openshift.io default --type merge --patch '{"spec":{"managementState":"Unmanaged"}}'
+oc edit configmap -n openshift-dns dns-default
+# container is now called dns instead of coredns:
+oc patch daemonset -n openshift-dns dns-default --patch-file coredns-patch.yaml
+# cluster-role is now called openshift-ovn-kubernetes-controller instead of ovn-kubernetes
+oc apply -f rolebinding.yaml
+# check the image tag:
+oc apply -f dnsflowdaemon.yaml
+```
+
+There is some permission issue where the coredns container cannot access the dnstap socket.
+CoreDNS runs using a specific selinuxcontext.
+[Doc on hostpath for persistent storage](https://docs.openshift.com/container-platform/4.11/storage/persistent_storage/persistent-storage-hostpath.html) mentions the need to run in privileged mode.
+
+Instead we can fix a specific selinux context for CoreDNS:
+```
+spec:
+  template:
+    spec:
+      containers:
+      - name: dns
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c900,c901"
+```
+
+so we can now run 
+```
+chcon system_u:object_r:container_file_t:s0:c900,c901 /var/run/dns/dnstap.sock
+```
+making sure the file is now accessible.
+
+This can be done by specifying ```-secon system_u:object_r:container_file_t:s0:c900,c901```.
 

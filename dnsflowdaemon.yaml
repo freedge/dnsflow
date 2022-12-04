@@ -16,7 +16,7 @@ spec:
     spec:    
       containers:
       - name: dnsflow
-        image: ghcr.io/freedge/dnsflow:latest
+        image: freedge/dnsflow:440
         args: [ "-tapsock", "/var/run/dns/dnstap.sock", "-node", "$(K8S_NODE)" ]
         env:
         - name: K8S_NODE                                                                                                                                              
