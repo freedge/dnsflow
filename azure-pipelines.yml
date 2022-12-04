@@ -17,3 +17,17 @@ steps:
   inputs:
     command: 'build'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: ghcr.io/freedge/dnsflow
+    command: build
+    Dockerfile: Containerfile.azure
+- task: Docker@2
+  displayName: 'Push the image'   
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    containerRegistry: 'ghcr'
+    repository: ghcr.io/freedge/dnsflow
+    command: push
+    Dockerfile: Containerfile.azure

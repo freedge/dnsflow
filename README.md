@@ -36,15 +36,16 @@ We make some assumptions:
 - we don't expect that much DNS traffic on the node
 - it's essentially best effort
 - this is a proof of concept and we do not care about cleaning flows we added
-
+- in our proof of concept, we rebuild a list of interesting pods and egressfirewall resources every 10 seconds,
+so if the DNS query arrives too early it will fail for sure
 
 
 # Running
 
 ## in localdev
 
-we start ovn-kubernetes kind environment, and retrieve its config.
-we start a local Coredns process, here's an example of Corefile to get started:
+we start ovn-kubernetes [kind](https://github.com/ovn-org/ovn-kubernetes/blob/master/docs/kind.md) environment, and retrieve its config.
+we start a local CoreDNS process, here's an example of Corefile to get started:
 ```
 .:1053 {
     forward . 8.8.8.8:53
@@ -97,13 +98,13 @@ spec:
 k patch deployment -n kube-system coredns --patch-file coredns-patch.yaml
 ```
 
-In ovn-kubernetes localdev, CoreDNS is targetted as a service that is not necessarily running on the same node as our pod. We make sure we have a single instance of CoreDNS so that everythign runs on the same node:
+In ovn-kubernetes localdev, CoreDNS is targetted as a service that is not necessarily running on the same node as our pod. We make sure we have a single instance of CoreDNS so that everything runs on the same node:
 ```
 k scale deployment -n kube-system coredns --replicas=1
 ```
 
 
-We will be able to experiment on the node where coredns is running:
+We will be able to experiment on the node where CoreDNS is running:
 
 ```bash
 $ k get -n kube-system pods -o wide -l k8s-app=kube-dns
@@ -125,6 +126,7 @@ k create namespace abc
 k apply -f efw.yaml
 k run -n abc --overrides="{\"spec\": {\"nodeSelector\": { \"kubernetes.io/hostname\": \"ovn-worker\" } } }"  --restart=Never --rm -ti --image alpine  myclient  -- sh
 ```
+
 
 ## in OpenShift
 
