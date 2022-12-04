@@ -28,6 +28,6 @@ steps:
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     containerRegistry: 'ghcr'
-    repository: ghcr.io/freedge/dnsflow
+    repository: freedge/dnsflow
     command: push
     Dockerfile: Containerfile.azure
