@@ -39,6 +39,7 @@ We make some assumptions:
 - in our proof of concept, we rebuild a list of interesting pods and egressfirewall resources every 10 seconds,
 so if the DNS query arrives too early it will fail for sure
 
+There could be other ideas, like using a http proxy like Squid to achieve the same thing for http/https traffic.
 
 # Running
 
@@ -165,3 +166,8 @@ making sure the file is now accessible.
 
 This can be done by specifying ```-secon system_u:object_r:container_file_t:s0:c900,c901```.
 
+Results for now:
+- when the pod starts, if it immediately sends a DNS query, it is "lost" from dnsflow, which is only checking for new pods every 10s. For this we should watch for resource updates.
+- right after the DNS query, it takes ~2s (or, 2 lost pings) before the flow gets installed.
+
+It should be due (in part) to CoreDNS dnstap plug-in [flush timeout](https://github.com/coredns/coredns/blob/9b94696b115d2d1394388e2b15c8ff05e5273cdf/plugin/dnstap/io.go#L16) and probably also caused a little bit by the time it takes to add the flow.
