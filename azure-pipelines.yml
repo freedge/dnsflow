@@ -19,14 +19,14 @@ steps:
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 - task: Docker@2
   displayName: Build an image
-  condition: and(succeeded(), not(startsWith(variables['Build.SourceVersionMessage'], "doc:")))
+  condition: and(succeeded(), not(startsWith(variables['Build.SourceVersionMessage'], 'doc:')))
   inputs:
     repository: ghcr.io/freedge/dnsflow
     command: build
     Dockerfile: Containerfile.azure
 - task: Docker@2
   displayName: 'Push the image'   
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), not(startsWith(variables['Build.SourceVersionMessage'], "doc:")))
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), not(startsWith(variables['Build.SourceVersionMessage'], 'doc:')))
   inputs:
     containerRegistry: 'ghcr'
     repository: freedge/dnsflow
